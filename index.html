@@ -164,7 +164,9 @@
     .row.three { grid-template-columns: 1.4fr 0.6fr; }
   }
   label { display: grid; gap: 0.35rem; font-size: 0.88rem; font-weight: 600; color: var(--muted); }
-  label span.req { color: var(--coral); }
+  label .lab { display: inline; line-height: 1.35; white-space: nowrap; }
+  label .lab .req, label span.req { color: var(--coral); display: inline; }
+  label .hint { display: inline; font-weight: 400; }
   input, select, textarea {
     width: 100%; appearance: none; border: 1px solid var(--line);
     background: rgba(18,14,26,0.65); color: var(--ink);
@@ -224,9 +226,12 @@
   }
   .confirm-pay a.pay-btn.venmo { background: var(--venmo); }
   .confirm-pay a.pay-btn.paypal { background: var(--paypal); }
+  .confirm-qr-lead {
+    text-align: center; margin: 1rem 0 0.55rem; max-width: 100%;
+  }
   .confirm-qr {
     display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;
-    margin: 1rem 0 0.5rem; max-width: 100%;
+    margin: 0 0 0.5rem; max-width: 100%;
   }
   .confirm-qr figure {
     margin: 0; text-align: center; width: min(150px, 42vw);
@@ -251,14 +256,21 @@
   }
   #pay.soft .pay-grid { pointer-events: auto; }
   #pay .pay-lead { margin-top: -0.35rem; margin-bottom: 1rem; }
-  .hint {  .hint { color: var(--muted); font-size: 0.82rem; font-weight: 400; }
-  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.25rem; }
+  .hint { color: var(--muted); font-size: 0.82rem; font-weight: 400; }
+  .actions {
+    display: flex; flex-direction: column; align-items: stretch; gap: 0.65rem;
+    margin-top: 0.5rem; width: 100%; max-width: 100%; box-sizing: border-box;
+  }
+  .actions .note { text-align: center; }
   button.primary, a.btn {
     border: 0; cursor: pointer; font: inherit; font-weight: 700; text-decoration: none;
     background: linear-gradient(135deg, var(--gold), var(--gold-deep));
     color: #1a1423; padding: 0.95rem 1.4rem; border-radius: 999px;
     box-shadow: 0 10px 30px rgba(232,196,104,0.28);
-    transition: transform 0.12s, filter 0.12s; display: inline-flex; align-items: center; gap: 0.45rem;
+    transition: transform 0.12s, filter 0.12s;
+    display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+    width: 100%; max-width: 100%; box-sizing: border-box;
+    appearance: none; -webkit-appearance: none;
   }
   button.primary:hover, a.btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
   button.primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
@@ -298,6 +310,7 @@
     color: var(--ink); font-size: 0.9rem;
   }
   .config-warning.show { display: block; }
+  .config-warning[hidden] { display: none !important; }
 
   html, body { overflow-x: hidden; }
   .pay-grid {
@@ -398,10 +411,10 @@
       </div>
       <form class="bet" id="betForm" novalidate>
         <div class="row two">
-          <label>Your name <span class="req">*</span>
+          <label><span class="lab">Your name <span class="req">*</span></span>
             <input name="name" id="name" required maxlength="80" placeholder="Alex" autocomplete="name" />
           </label>
-          <label>Email <span class="hint">(optional, for results)</span>
+          <label><span class="lab">Email <span class="hint">(optional, for results)</span></span>
             <input name="email" id="email" type="email" maxlength="120" placeholder="you@email.com" autocomplete="email" />
           </label>
         </div>
@@ -409,10 +422,10 @@
         <div class="breed-card">
           <h3>Breed #1 <span class="hint">highest %</span></h3>
           <div class="row three">
-            <label>Breed <span class="req">*</span>
+            <label><span class="lab">Breed <span class="req">*</span></span>
               <input name="breed1" id="breed1" list="breedList" required placeholder="e.g. Labrador Retriever" />
             </label>
-            <label>% <span class="req">*</span>
+            <label><span class="lab">% <span class="req">*</span></span>
               <input name="pct1" id="pct1" type="number" min="1" max="100" step="1" required placeholder="40" />
             </label>
           </div>
@@ -420,10 +433,10 @@
         <div class="breed-card">
           <h3>Breed #2</h3>
           <div class="row three">
-            <label>Breed <span class="req">*</span>
+            <label><span class="lab">Breed <span class="req">*</span></span>
               <input name="breed2" id="breed2" list="breedList" required placeholder="e.g. German Shepherd" />
             </label>
-            <label>% <span class="req">*</span>
+            <label><span class="lab">% <span class="req">*</span></span>
               <input name="pct2" id="pct2" type="number" min="1" max="100" step="1" required placeholder="30" />
             </label>
           </div>
@@ -431,10 +444,10 @@
         <div class="breed-card">
           <h3>Breed #3</h3>
           <div class="row three">
-            <label>Breed <span class="req">*</span>
+            <label><span class="lab">Breed <span class="req">*</span></span>
               <input name="breed3" id="breed3" list="breedList" required placeholder="e.g. Siberian Husky" />
             </label>
-            <label>% <span class="req">*</span>
+            <label><span class="lab">% <span class="req">*</span></span>
               <input name="pct3" id="pct3" type="number" min="1" max="100" step="1" required placeholder="20" />
             </label>
           </div>
@@ -466,11 +479,11 @@
         </div>
 
         <div class="row two">
-          <label>Pledge amount (USD) <span class="req">*</span>
+          <label><span class="lab">Pledge amount (USD) <span class="req">*</span></span>
             <input name="pledge" id="pledge" type="number" min="1" max="10000" step="1" required placeholder="20" />
             <span class="hint">Step 1 records your guess + amount. Step 2 is sending it.</span>
           </label>
-          <label>Note / trash talk <span class="hint">(optional)</span>
+          <label><span class="lab">Note / trash talk <span class="hint">(optional)</span></span>
             <input name="comment" id="comment" maxlength="200" placeholder="She's 100% good girl" />
           </label>
         </div>
@@ -489,10 +502,10 @@
           <a class="pay-btn venmo" id="confirmVenmo" href="#" target="_blank" rel="noopener">Open Venmo</a>
           <a class="pay-btn paypal" id="confirmPaypal" href="https://www.paypal.com/qrcodes/p2pqrc/84KUAF25UZWSS" target="_blank" rel="noopener">Open PayPal</a>
         </div>
+        <p class="hint confirm-qr-lead">Or scan a QR — mention Freya bet in the note</p>
         <div class="confirm-qr" id="confirmQr">
           <!-- filled from existing QR imgs -->
         </div>
-        <p class="hint" style="text-align:center;margin:0.35rem 0 0;">Prefer QR? Scan below. Memo/note should mention Freya bet.</p>
         <div class="confirm-actions">
           <button type="button" class="paid-btn" id="paidBtn">I’ve paid — thanks!</button>
           <span class="hint" id="paidAck" hidden>Got it — Colton will match your pledge to your guess. 🐾</span>
@@ -623,9 +636,21 @@ pctInputs.forEach((el) => {
 });
 
 function formReady() {
-  return Boolean(CONFIG.formId && CONFIG.entries.name && CONFIG.entries.breed1);
+  return Boolean(CONFIG.formId && CONFIG.entries && CONFIG.entries.name && CONFIG.entries.breed1);
 }
-if (!formReady()) $("configWarning").classList.add("show");
+(function syncConfigWarning() {
+  const el = $("configWarning");
+  if (!el) return;
+  if (formReady()) {
+    el.classList.remove("show");
+    el.hidden = true;
+    el.setAttribute("aria-hidden", "true");
+  } else {
+    el.hidden = false;
+    el.classList.add("show");
+    el.removeAttribute("aria-hidden");
+  }
+})();
 
 function collectBet() {
   const [pct1, pct2, pct3] = pctValues();
