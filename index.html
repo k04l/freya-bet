@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1a1423" />
+<title>Who's Freya? — DNA Breed Bet for Charity</title>
+<meta name="description" content="Guess Freya's top 3 breeds. Closest guess wins — winnings go to charity." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #120e1a;
+    --bg-elev: #1c1528;
+    --bg-card: #241b33;
+    --ink: #f7f0e6;
+    --muted: #b9aec9;
+    --gold: #e8c468;
+    --gold-deep: #c9952e;
+    --coral: #e07a5f;
+    --sage: #81b29a;
+    --lilac: #9b87c7;
+    --line: rgba(247, 240, 230, 0.12);
+    --shadow: 0 24px 60px rgba(0,0,0,0.45);
+    --radius: 22px;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Outfit", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(155,135,199,0.28), transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, rgba(232,196,104,0.18), transparent 50%),
+      radial-gradient(800px 500px at 50% 100%, rgba(224,122,95,0.12), transparent 55%),
+      var(--bg);
+    min-height: 100vh;
+    line-height: 1.55;
+  }
+  a { color: var(--gold); }
+  .wrap { width: min(1080px, calc(100% - 2rem)); margin: 0 auto; }
+  header.hero {
+    padding: 2.5rem 0 1.5rem;
+    display: grid;
+    gap: 1.75rem;
+    align-items: center;
+  }
+  @media (min-width: 860px) {
+    header.hero { grid-template-columns: 1.15fr 0.85fr; padding-top: 3.25rem; }
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.35rem 0.8rem; border-radius: 999px;
+    background: rgba(232,196,104,0.12); color: var(--gold);
+    border: 1px solid rgba(232,196,104,0.35);
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700; font-size: clamp(2.4rem, 6vw, 3.8rem);
+    line-height: 1.05; margin: 0.7rem 0 0.85rem; letter-spacing: -0.02em;
+  }
+  h1 em { font-style: italic; color: var(--gold); }
+  .lede { color: var(--muted); font-size: 1.08rem; max-width: 38rem; margin: 0; }
+  .hero-art {
+    position: relative; aspect-ratio: 1; max-width: 420px; margin: 0 auto; width: 100%;
+  }
+  .hero-art svg { width: 100%; height: 100%; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4)); }
+  .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1.5rem;
+  }
+  .stat {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+    border-radius: 16px; padding: 0.9rem 1rem; text-align: center;
+  }
+  .stat strong { display: block; font-family: var(--font-display); font-size: 1.35rem; color: var(--gold); }
+  .stat span { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  section {
+    background: linear-gradient(180deg, rgba(36,27,51,0.92), rgba(28,21,40,0.92));
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.5rem; margin: 1.1rem 0; box-shadow: var(--shadow);
+  }
+  @media (min-width: 700px) { section { padding: 1.85rem 2rem; } }
+  h2 {
+    font-family: var(--font-display); font-size: 1.55rem; margin: 0 0 0.75rem;
+    display: flex; align-items: center; gap: 0.55rem;
+  }
+  h2 .num {
+    width: 1.7rem; height: 1.7rem; border-radius: 50%;
+    background: var(--gold); color: #1a1423; display: inline-grid; place-items: center;
+    font-family: var(--font-body); font-size: 0.85rem; font-weight: 700;
+  }
+  .rules { color: var(--muted); }
+  .rules ol { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+  .rules li { margin: 0.45rem 0; }
+  .score-box {
+    margin-top: 1rem; padding: 1rem 1.1rem; border-radius: 14px;
+    background: rgba(232,196,104,0.08); border: 1px dashed rgba(232,196,104,0.4);
+    color: var(--ink); font-size: 0.95rem;
+  }
+  .score-box code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: rgba(0,0,0,0.25); padding: 0.1rem 0.35rem; border-radius: 6px; color: var(--gold);
+  }
+  form.bet {
+    display: grid; gap: 1rem;
+  }
+  .row { display: grid; gap: 0.85rem; }
+  @media (min-width: 640px) {
+    .row.two { grid-template-columns: 1fr 1fr; }
+    .row.three { grid-template-columns: 1.4fr 0.6fr; }
+  }
+  label { display: grid; gap: 0.35rem; font-size: 0.88rem; font-weight: 600; color: var(--muted); }
+  label span.req { color: var(--coral); }
+  input, select, textarea {
+    width: 100%; appearance: none; border: 1px solid var(--line);
+    background: rgba(18,14,26,0.65); color: var(--ink);
+    border-radius: 12px; padding: 0.85rem 0.95rem; font: inherit; font-size: 1rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(232,196,104,0.22);
+  }
+  .breed-card {
+    border: 1px solid var(--line); border-radius: 16px; padding: 1rem;
+    background: rgba(18,14,26,0.35);
+  }
+  .breed-card h3 {
+    margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 600; color: var(--gold);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .pct-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 1rem; border-radius: 12px;
+    background: rgba(129,178,154,0.12); border: 1px solid rgba(129,178,154,0.35);
+    font-weight: 600;
+  }
+  .pct-total.warn { background: rgba(224,122,95,0.12); border-color: rgba(224,122,95,0.4); }
+  .pct-total #pctSum { font-family: var(--font-display); font-size: 1.25rem; color: var(--sage); }
+  .pct-total.warn #pctSum { color: var(--coral); }
+  .hint { color: var(--muted); font-size: 0.82rem; font-weight: 400; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.25rem; }
+  button.primary {
+    border: 0; cursor: pointer; font: inherit; font-weight: 700;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: #1a1423; padding: 0.95rem 1.4rem; border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(232,196,104,0.28);
+    transition: transform 0.12s, filter 0.12s;
+  }
+  button.primary:hover { transform: translateY(-1px); filter: brightness(1.05); }
+  button.primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+  .note { color: var(--muted); font-size: 0.85rem; }
+  .toast {
+    display: none; margin-top: 1rem; padding: 1rem 1.1rem; border-radius: 14px;
+    background: rgba(129,178,154,0.15); border: 1px solid rgba(129,178,154,0.45); color: var(--ink);
+  }
+  .toast.show { display: block; }
+  .toast.error { background: rgba(224,122,95,0.15); border-color: rgba(224,122,95,0.45); }
+  .bets-grid { display: grid; gap: 0.75rem; }
+  .bet-chip {
+    display: grid; gap: 0.35rem; padding: 0.9rem 1rem; border-radius: 14px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--line);
+  }
+  .bet-chip .who { font-weight: 600; }
+  .bet-chip .guesses { color: var(--muted); font-size: 0.92rem; }
+  .bet-chip .pledge { color: var(--gold); font-weight: 600; font-size: 0.9rem; }
+  .empty { color: var(--muted); font-style: italic; padding: 0.5rem 0; }
+  .chart {
+    display: grid; gap: 0.55rem; margin-top: 0.75rem;
+  }
+  .bar-row { display: grid; grid-template-columns: 8.5rem 1fr auto; gap: 0.65rem; align-items: center; font-size: 0.9rem; }
+  .bar-track { height: 10px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--lilac), var(--gold)); width: 0; transition: width 0.6s ease; }
+  footer {
+    text-align: center; color: var(--muted); font-size: 0.85rem;
+    padding: 2rem 0 3rem;
+  }
+  .charity-pill {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    margin-top: 0.85rem; padding: 0.45rem 0.85rem; border-radius: 999px;
+    background: rgba(129,178,154,0.12); border: 1px solid rgba(129,178,154,0.35);
+    color: var(--sage); font-weight: 600; font-size: 0.9rem;
+  }
+  .config-warning {
+    display: none; margin: 1rem 0; padding: 0.9rem 1rem; border-radius: 12px;
+    background: rgba(224,122,95,0.12); border: 1px solid rgba(224,122,95,0.35);
+    color: var(--ink); font-size: 0.9rem;
+  }
+  .config-warning.show { display: block; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <div class="badge">🔍 Case file · DNA mystery</div>
+        <h1>Who's <em>Freya</em>?</h1>
+        <p class="lede">
+          Freya's friends are placing friendly bets on her DNA test. Guess her top 3 breeds
+          with percentages — closest guess wins, and the pot goes to charity.
+        </p>
+        <div class="charity-pill">❤️ Proceeds → Charity TBD</div>
+        <div class="stats">
+          <div class="stat"><strong id="statBets">—</strong><span>Bets so far</span></div>
+          <div class="stat"><strong id="statPledge">$0</strong><span>Pledged</span></div>
+          <div class="stat"><strong>Top 3</strong><span>Breeds + %</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <!-- Detective dog + DNA helix illustration -->
+        <svg viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="60" y1="40" x2="360" y2="380" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#9B87C7"/><stop offset="1" stop-color="#E8C468"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="120" y1="80" x2="300" y2="340" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#241B33"/><stop offset="1" stop-color="#3A2C52"/>
+            </linearGradient>
+            <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="8"/>
+            </filter>
+          </defs>
+          <circle cx="210" cy="210" r="180" fill="url(#g1)" opacity="0.15"/>
+          <circle cx="210" cy="210" r="148" stroke="url(#g1)" stroke-width="2" stroke-dasharray="6 10" opacity="0.55"/>
+          <!-- DNA helix -->
+          <g opacity="0.55" transform="translate(300,70) rotate(12)">
+            <path d="M20 0 C50 40, -10 80, 20 120 C50 160, -10 200, 20 240" stroke="#E8C468" stroke-width="3" fill="none"/>
+            <path d="M50 0 C20 40, 80 80, 50 120 C20 160, 80 200, 50 240" stroke="#9B87C7" stroke-width="3" fill="none"/>
+            <g stroke="#F7F0E6" stroke-width="2" opacity="0.7">
+              <line x1="28" y1="20" x2="42" y2="20"/><line x1="22" y1="50" x2="48" y2="50"/>
+              <line x1="28" y1="80" x2="42" y2="80"/><line x1="22" y1="110" x2="48" y2="110"/>
+              <line x1="28" y1="140" x2="42" y2="140"/><line x1="22" y1="170" x2="48" y2="170"/>
+              <line x1="28" y1="200" x2="42" y2="200"/><line x1="22" y1="230" x2="48" y2="230"/>
+            </g>
+          </g>
+          <!-- Magnifying glass -->
+          <g transform="translate(55,250)">
+            <circle cx="70" cy="70" r="58" fill="#1C1528" stroke="#E8C468" stroke-width="8"/>
+            <circle cx="70" cy="70" r="42" fill="#120E1A" stroke="#9B87C7" stroke-width="2" opacity="0.8"/>
+            <rect x="108" y="118" width="18" height="70" rx="9" transform="rotate(40 108 118)" fill="#E8C468"/>
+          </g>
+          <!-- Dog silhouette (friendly mutt) -->
+          <g transform="translate(95,95)">
+            <ellipse cx="120" cy="195" rx="95" ry="28" fill="#000" opacity="0.25" filter="url(#soft)"/>
+            <path d="M70 170 C40 150, 35 110, 58 90 C70 55, 100 45, 120 58 C145 40, 185 48, 195 85 C225 95, 230 140, 205 165 C190 195, 95 205, 70 170Z" fill="url(#g2)" stroke="#E8C468" stroke-width="3"/>
+            <!-- ears -->
+            <path d="M62 95 C40 70, 45 40, 72 68 C68 82, 68 90, 62 95Z" fill="#3A2C52" stroke="#E8C468" stroke-width="2"/>
+            <path d="M178 88 C205 60, 215 95, 190 108 C185 98, 182 92, 178 88Z" fill="#3A2C52" stroke="#E8C468" stroke-width="2"/>
+            <!-- face -->
+            <circle cx="100" cy="115" r="5" fill="#F7F0E6"/>
+            <circle cx="150" cy="115" r="5" fill="#F7F0E6"/>
+            <ellipse cx="125" cy="138" rx="14" ry="10" fill="#E07A5F"/>
+            <path d="M118 148 Q125 158 132 148" stroke="#F7F0E6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- collar tag -->
+            <path d="M85 168 Q125 185 165 168" stroke="#E8C468" stroke-width="4" fill="none"/>
+            <circle cx="125" cy="180" r="12" fill="#E8C468"/>
+            <text x="125" y="184" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#1A1423">F</text>
+          </g>
+          <!-- question marks -->
+          <text x="320" y="120" font-family="Fraunces,serif" font-size="42" fill="#E8C468" opacity="0.85">?</text>
+          <text x="50" y="80" font-family="Fraunces,serif" font-size="28" fill="#9B87C7" opacity="0.7">?</text>
+        </svg>
+      </div>
+    </header>
+
+    <section class="rules" id="how">
+      <h2><span class="num">1</span> How it works</h2>
+      <ol>
+        <li>Guess Freya's <strong>top 3 breeds</strong> and a percentage for each (they should add up to ≤ 100% — mixed pups leave room for “other”).</li>
+        <li>Pledge an amount you're happy to donate if you join the pot. <strong>No payment on this page</strong> — Colton collects after the DNA results.</li>
+        <li>When the DNA report lands, we score every guess. Closest wins bragging rights; the pledged pot goes to <strong>Charity TBD</strong>.</li>
+      </ol>
+      <div class="score-box">
+        <strong>Scoring (simple &amp; fair):</strong>
+        For each breed that appears in both your guess and the DNA results, you earn
+        <code>min(your %, DNA %)</code>. Sum those across matching breeds.
+        Highest score wins. Ties split the glory (and the pot still goes to charity).
+        Example: you guess Lab 40 / Shepherd 30 / Husky 20; DNA is Lab 35 / Shepherd 25 / Poodle 20 → score = 35 + 25 = <strong>60</strong>.
+      </div>
+    </section>
+
+    <section id="bet">
+      <h2><span class="num">2</span> Place your bet</h2>
+      <div id="configWarning" class="config-warning">
+        Form backend isn't wired yet. Fill this out for a dry-run, or ask Colton for the live link once the Google Form is connected.
+      </div>
+      <form class="bet" id="betForm" novalidate>
+        <div class="row two">
+          <label>Your name <span class="req">*</span>
+            <input name="name" id="name" required maxlength="80" placeholder="Alex" autocomplete="name" />
+          </label>
+          <label>Email <span class="hint">(optional, for results)</span>
+            <input name="email" id="email" type="email" maxlength="120" placeholder="you@email.com" autocomplete="email" />
+          </label>
+        </div>
+
+        <div class="breed-card">
+          <h3>Breed #1 <span class="hint">highest %</span></h3>
+          <div class="row three">
+            <label>Breed <span class="req">*</span>
+              <input name="breed1" id="breed1" list="breedList" required placeholder="e.g. Labrador Retriever" />
+            </label>
+            <label>% <span class="req">*</span>
+              <input name="pct1" id="pct1" type="number" min="1" max="100" step="1" required placeholder="40" />
+            </label>
+          </div>
+        </div>
+        <div class="breed-card">
+          <h3>Breed #2</h3>
+          <div class="row three">
+            <label>Breed <span class="req">*</span>
+              <input name="breed2" id="breed2" list="breedList" required placeholder="e.g. German Shepherd" />
+            </label>
+            <label>% <span class="req">*</span>
+              <input name="pct2" id="pct2" type="number" min="1" max="100" step="1" required placeholder="30" />
+            </label>
+          </div>
+        </div>
+        <div class="breed-card">
+          <h3>Breed #3</h3>
+          <div class="row three">
+            <label>Breed <span class="req">*</span>
+              <input name="breed3" id="breed3" list="breedList" required placeholder="e.g. Siberian Husky" />
+            </label>
+            <label>% <span class="req">*</span>
+              <input name="pct3" id="pct3" type="number" min="1" max="100" step="1" required placeholder="20" />
+            </label>
+          </div>
+        </div>
+
+        <datalist id="breedList">
+          <option value="Labrador Retriever"><option value="Golden Retriever"><option value="German Shepherd">
+          <option value="Australian Shepherd"><option value="Border Collie"><option value="Siberian Husky">
+          <option value="Alaskan Malamute"><option value="Poodle"><option value="Standard Poodle">
+          <option value="Miniature Poodle"><option value="Beagle"><option value="Boxer">
+          <option value="Bulldog"><option value="French Bulldog"><option value="Rottweiler">
+          <option value="Doberman Pinscher"><option value="Great Dane"><option value="Cane Corso">
+          <option value="Pit Bull"><option value="American Staffordshire Terrier"><option value="Staffordshire Bull Terrier">
+          <option value="Chihuahua"><option value="Dachshund"><option value="Corgi"><option value="Pembroke Welsh Corgi">
+          <option value="Shih Tzu"><option value="Yorkshire Terrier"><option value="Maltese">
+          <option value="Pomeranian"><option value="Shiba Inu"><option value="Akita">
+          <option value="Chow Chow"><option value="Samoyed"><option value="Bernese Mountain Dog">
+          <option value="Saint Bernard"><option value="Newfoundland"><option value="Great Pyrenees">
+          <option value="Collie"><option value="Shetland Sheepdog"><option value="Cattle Dog"><option value="Australian Cattle Dog">
+          <option value="Heeler"><option value="Boxer"><option value="Vizsla"><option value="Weimaraner">
+          <option value="Pointer"><option value="Spaniel"><option value="Cocker Spaniel"><option value="Springer Spaniel">
+          <option value="Setter"><option value="Retriever"><option value="Hound"><option value="Terrier">
+          <option value="Mixed / Unknown"><option value="Wolf hybrid">
+        </datalist>
+
+        <div class="pct-total" id="pctBox">
+          <span>Your percentages total</span>
+          <span><span id="pctSum">0</span>% <span class="hint" id="pctHint">· leave room for “other” if you want</span></span>
+        </div>
+
+        <div class="row two">
+          <label>Pledge amount (USD) <span class="req">*</span>
+            <input name="pledge" id="pledge" type="number" min="1" max="10000" step="1" required placeholder="20" />
+            <span class="hint">Tracked only — collected after results. No charge today.</span>
+          </label>
+          <label>Note / trash talk <span class="hint">(optional)</span>
+            <input name="comment" id="comment" maxlength="200" placeholder="She's 100% good girl" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="primary" id="submitBtn">Lock in my guess →</button>
+          <span class="note">One serious guess per person. Have fun — Freya's counting on you.</span>
+        </div>
+        <div class="toast" id="toast" role="status"></div>
+      </form>
+    </section>
+
+    <section id="board">
+      <h2><span class="num">3</span> Bets so far</h2>
+      <p class="hint" id="boardHint">Live leaderboard loads when the responses sheet is published. Until then, new bets appear here after you submit (this browser only).</p>
+      <div class="bets-grid" id="betsList"><p class="empty">No bets yet — be the first detective.</p></div>
+      <h3 style="margin:1.4rem 0 0.4rem;font-family:var(--font-display);font-size:1.15rem;">Breed popularity</h3>
+      <div class="chart" id="breedChart"><p class="empty">Chart fills in as guesses arrive.</p></div>
+    </section>
+
+    <footer>
+      Made for Freya · DNA mystery · Charity TBD<br />
+      Questions? Ping Colton.
+    </footer>
+  </div>
+
+<script>
+/* ========== CONFIG — paste Google Form values here ========== */
+const CONFIG = {
+  // After creating the Form, paste the form ID from the URL:
+  // https://docs.google.com/forms/d/e/FORM_ID/viewform
+  formId: "",
+  // entry.XXXX ids from "Get pre-filled link" (see SETUP.md)
+  entries: {
+    name: "",
+    email: "",
+    breed1: "",
+    pct1: "",
+    breed2: "",
+    pct2: "",
+    breed3: "",
+    pct3: "",
+    pledge: "",
+    comment: ""
+  },
+  // Optional: published CSV of the responses Sheet for live board
+  // File → Share → Publish to web → CSV, paste that URL:
+  sheetCsvUrl: ""
+};
+/* ============================================================ */
+
+const $ = (id) => document.getElementById(id);
+const pctInputs = [$("pct1"), $("pct2"), $("pct3")];
+const localBets = [];
+
+function updatePct() {
+  const sum = pctInputs.reduce((a, el) => a + (parseFloat(el.value) || 0), 0);
+  $("pctSum").textContent = String(Math.round(sum * 10) / 10);
+  const box = $("pctBox");
+  const ok = sum > 0 && sum <= 100;
+  box.classList.toggle("warn", !ok && sum !== 0);
+  $("pctHint").textContent = sum > 100
+    ? "· too high — trim to ≤ 100%"
+    : sum === 100
+      ? "· locked in at 100%"
+      : "· leave room for “other” if you want";
+  return ok;
+}
+pctInputs.forEach((el) => el.addEventListener("input", updatePct));
+
+function formReady() {
+  return Boolean(CONFIG.formId && CONFIG.entries.name && CONFIG.entries.breed1);
+}
+
+if (!formReady()) $("configWarning").classList.add("show");
+
+function collectBet() {
+  return {
+    name: $("name").value.trim(),
+    email: $("email").value.trim(),
+    breed1: $("breed1").value.trim(),
+    pct1: Number($("pct1").value),
+    breed2: $("breed2").value.trim(),
+    pct2: Number($("pct2").value),
+    breed3: $("breed3").value.trim(),
+    pct3: Number($("pct3").value),
+    pledge: Number($("pledge").value),
+    comment: $("comment").value.trim(),
+    ts: new Date().toISOString()
+  };
+}
+
+function validate(b) {
+  if (!b.name) return "Add your name.";
+  if (!b.breed1 || !b.breed2 || !b.breed3) return "Name all three breeds.";
+  const breeds = [b.breed1, b.breed2, b.breed3].map((x) => x.toLowerCase());
+  if (new Set(breeds).size < 3) return "Use three different breeds.";
+  if (![b.pct1, b.pct2, b.pct3].every((n) => n >= 1 && n <= 100)) return "Each % should be 1–100.";
+  const sum = b.pct1 + b.pct2 + b.pct3;
+  if (sum > 100) return "Percentages must total 100% or less.";
+  if (!b.pledge || b.pledge < 1) return "Add a pledge amount (tracked only).";
+  return null;
+}
+
+async function submitToGoogle(b) {
+  const body = new URLSearchParams();
+  const map = {
+    name: b.name, email: b.email,
+    breed1: b.breed1, pct1: String(b.pct1),
+    breed2: b.breed2, pct2: String(b.pct2),
+    breed3: b.breed3, pct3: String(b.pct3),
+    pledge: String(b.pledge), comment: b.comment
+  };
+  for (const [key, entryId] of Object.entries(CONFIG.entries)) {
+    if (entryId) body.append(entryId, map[key] ?? "");
+  }
+  const url = `https://docs.google.com/forms/d/e/${CONFIG.formId}/formResponse`;
+  // no-cors: Google doesn't return CORS headers; request still lands
+  await fetch(url, { method: "POST", mode: "no-cors", body });
+}
+
+function renderBets(list) {
+  $("statBets").textContent = String(list.length || "—");
+  const total = list.reduce((a, b) => a + (Number(b.pledge) || 0), 0);
+  $("statPledge").textContent = "$" + total.toLocaleString();
+  const box = $("betsList");
+  if (!list.length) {
+    box.innerHTML = '<p class="empty">No bets yet — be the first detective.</p>';
+  } else {
+    box.innerHTML = list.slice().reverse().map((b) => `
+      <div class="bet-chip">
+        <div class="who">${escapeHtml(b.name)}</div>
+        <div class="guesses">${escapeHtml(b.breed1)} ${b.pct1}% · ${escapeHtml(b.breed2)} ${b.pct2}% · ${escapeHtml(b.breed3)} ${b.pct3}%</div>
+        <div class="pledge">$${Number(b.pledge).toLocaleString()} pledged${b.comment ? " · “" + escapeHtml(b.comment) + "”" : ""}</div>
+      </div>`).join("");
+  }
+  // popularity
+  const counts = {};
+  list.forEach((b) => {
+    [b.breed1, b.breed2, b.breed3].forEach((br, i) => {
+      const w = [3, 2, 1][i];
+      const k = br.trim();
+      if (!k) return;
+      counts[k] = (counts[k] || 0) + w;
+    });
+  });
+  const ranked = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const chart = $("breedChart");
+  if (!ranked.length) {
+    chart.innerHTML = '<p class="empty">Chart fills in as guesses arrive.</p>';
+    return;
+  }
+  const max = ranked[0][1];
+  chart.innerHTML = ranked.map(([name, score]) => `
+    <div class="bar-row">
+      <div>${escapeHtml(name)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round((score / max) * 100)}%"></div></div>
+      <div>${score}</div>
+    </div>`).join("");
+}
+
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+$("betForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const toast = $("toast");
+  const b = collectBet();
+  const err = validate(b);
+  if (err) {
+    toast.className = "toast show error";
+    toast.textContent = err;
+    return;
+  }
+  $("submitBtn").disabled = true;
+  try {
+    if (formReady()) {
+      await submitToGoogle(b);
+      toast.className = "toast show";
+      toast.textContent = "Guess locked in! Thanks — Freya salutes you. 🐾";
+    } else {
+      toast.className = "toast show";
+      toast.textContent = "Saved locally for preview (Google Form not wired yet).";
+    }
+    localBets.push(b);
+    renderBets(mergeUnique(window.__remoteBets || [], localBets));
+    $("betForm").reset();
+    updatePct();
+  } catch (ex) {
+    toast.className = "toast show error";
+    toast.textContent = "Couldn’t reach the form. Try again, or tell Colton.";
+  } finally {
+    $("submitBtn").disabled = false;
+  }
+});
+
+function mergeUnique(a, b) {
+  const seen = new Set();
+  const out = [];
+  [...a, ...b].forEach((x) => {
+    const k = (x.name + "|" + x.breed1 + "|" + x.pct1 + "|" + x.pledge).toLowerCase();
+    if (seen.has(k)) return;
+    seen.add(k);
+    out.push(x);
+  });
+  return out;
+}
+
+async function loadRemote() {
+  if (!CONFIG.sheetCsvUrl) return;
+  try {
+    const res = await fetch(CONFIG.sheetCsvUrl + (CONFIG.sheetCsvUrl.includes("?") ? "&" : "?") + "t=" + Date.now());
+    const text = await res.text();
+    const rows = parseCsv(text);
+    if (rows.length < 2) return;
+    const headers = rows[0].map((h) => h.trim().toLowerCase());
+    const idx = (names) => {
+      for (const n of names) {
+        const i = headers.findIndex((h) => h === n || h.includes(n));
+        if (i >= 0) return i;
+      }
+      return -1;
+    };
+    const iName = idx(["name", "your name"]);
+    const iEmail = idx(["email"]);
+    const iB1 = idx(["breed1", "breed #1", "breed 1"]);
+    const iP1 = idx(["pct1", "%1", "percent 1", "percentage 1"]);
+    const iB2 = idx(["breed2", "breed #2", "breed 2"]);
+    const iP2 = idx(["pct2", "%2", "percent 2"]);
+    const iB3 = idx(["breed3", "breed #3", "breed 3"]);
+    const iP3 = idx(["pct3", "%3", "percent 3"]);
+    const iPledge = idx(["pledge", "amount"]);
+    const iComment = idx(["comment", "note"]);
+    window.__remoteBets = rows.slice(1).filter((r) => r[iName]).map((r) => ({
+      name: r[iName] || "",
+      email: iEmail >= 0 ? r[iEmail] : "",
+      breed1: r[iB1] || "", pct1: Number(r[iP1]) || 0,
+      breed2: r[iB2] || "", pct2: Number(r[iP2]) || 0,
+      breed3: r[iB3] || "", pct3: Number(r[iP3]) || 0,
+      pledge: Number(r[iPledge]) || 0,
+      comment: iComment >= 0 ? r[iComment] : ""
+    }));
+    $("boardHint").textContent = "Live from the responses sheet · refreshes on load.";
+    renderBets(mergeUnique(window.__remoteBets, localBets));
+  } catch (e) {
+    console.warn("CSV load failed", e);
+  }
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [], cell = "", inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i], n = text[i + 1];
+    if (inQ) {
+      if (c === '"' && n === '"') { cell += '"'; i++; }
+      else if (c === '"') inQ = false;
+      else cell += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ",") { row.push(cell); cell = ""; }
+      else if (c === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+      else if (c !== "\r") cell += c;
+    }
+  }
+  if (cell.length || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+
+updatePct();
+renderBets([]);
+loadRemote();
+</script>
+</body>
+</html>
