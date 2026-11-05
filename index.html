@@ -183,15 +183,75 @@
     margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 600; color: var(--gold);
   }
   .pct-total {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 0.75rem 1rem; border-radius: 12px;
-    background: rgba(129,178,154,0.12); border: 1px solid rgba(129,178,154,0.35);
-    font-weight: 600;
+    display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    padding: 0.75rem 1rem; border-radius: 14px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+    font-weight: 600; max-width: 100%; box-sizing: border-box;
   }
-  .pct-total.warn { background: rgba(224,122,95,0.12); border-color: rgba(224,122,95,0.4); }
-  .pct-total #pctSum { font-family: var(--font-display); font-size: 1.25rem; color: var(--sage); }
-  .pct-total.warn #pctSum { color: var(--coral); }
-  .hint { color: var(--muted); font-size: 0.82rem; font-weight: 400; }
+  .pct-total #pctSum { font-family: var(--font-display); font-size: 1.25rem; color: var(--muted); }
+  .pct-total.under { background: rgba(155,135,199,0.12); border-color: rgba(155,135,199,0.4); }
+  .pct-total.under #pctSum { color: var(--lilac); }
+  .pct-total.ok { background: rgba(129,178,154,0.12); border-color: rgba(129,178,154,0.45); }
+  .pct-total.ok #pctSum { color: var(--sage); }
+  .pct-total.over { background: rgba(224,122,95,0.12); border-color: rgba(224,122,95,0.45); }
+  .pct-total.over #pctSum { color: var(--coral); }
+  .pct-total .hint { font-weight: 400; }
+  .confirm-step {
+    display: none; margin-top: 0.5rem;
+    padding: 1.25rem 1.15rem; border-radius: 18px;
+    background: rgba(129,178,154,0.1); border: 1px solid rgba(129,178,154,0.4);
+    max-width: 100%; box-sizing: border-box; overflow-x: hidden;
+  }
+  .confirm-step.show { display: block; }
+  .confirm-step h3 {
+    font-family: var(--font-display); font-size: 1.45rem; margin: 0 0 0.5rem;
+  }
+  .confirm-step .summary {
+    color: var(--muted); font-size: 0.95rem; margin: 0 0 1rem; line-height: 1.45;
+  }
+  .confirm-step .summary strong { color: var(--ink); }
+  .confirm-pay {
+    display: grid; gap: 0.75rem; width: 100%; max-width: 100%;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 560px) {
+    .confirm-pay { grid-template-columns: 1fr 1fr; }
+  }
+  .confirm-pay a.pay-btn {
+    width: 100%; max-width: 100%; box-sizing: border-box;
+    color: #fff !important; text-decoration: none; text-align: center;
+    padding: 0.9rem 1.1rem; border-radius: 999px; font-weight: 700;
+  }
+  .confirm-pay a.pay-btn.venmo { background: var(--venmo); }
+  .confirm-pay a.pay-btn.paypal { background: var(--paypal); }
+  .confirm-qr {
+    display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;
+    margin: 1rem 0 0.5rem; max-width: 100%;
+  }
+  .confirm-qr figure {
+    margin: 0; text-align: center; width: min(150px, 42vw);
+  }
+  .confirm-qr img {
+    width: 100%; max-width: 150px; height: auto; aspect-ratio: 1;
+    object-fit: contain; background: #fff; border-radius: 12px; padding: 0.45rem;
+    box-sizing: border-box; display: block; margin: 0 auto;
+  }
+  .confirm-qr figcaption { font-size: 0.78rem; color: var(--muted); margin-top: 0.35rem; }
+  .confirm-actions { display: grid; gap: 0.65rem; margin-top: 0.85rem; justify-items: stretch; }
+  .confirm-actions .paid-btn {
+    appearance: none; border: 1px solid rgba(129,178,154,0.5);
+    background: linear-gradient(135deg, var(--sage), #5f9e82);
+    color: #102018; font-weight: 700; padding: 0.85rem 1.2rem; border-radius: 999px;
+    cursor: pointer; width: 100%; max-width: 100%; box-sizing: border-box;
+  }
+  .confirm-actions .paid-btn:hover { filter: brightness(1.05); }
+  .confirm-actions .hint { text-align: center; }
+  #pay.soft {
+    opacity: 0.72;
+  }
+  #pay.soft .pay-grid { pointer-events: auto; }
+  #pay .pay-lead { margin-top: -0.35rem; margin-bottom: 1rem; }
+  .hint {  .hint { color: var(--muted); font-size: 0.82rem; font-weight: 400; }
   .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.25rem; }
   button.primary, a.btn {
     border: 0; cursor: pointer; font: inherit; font-weight: 700; text-decoration: none;
@@ -408,7 +468,7 @@
         <div class="row two">
           <label>Pledge amount (USD) <span class="req">*</span>
             <input name="pledge" id="pledge" type="number" min="1" max="10000" step="1" required placeholder="20" />
-            <span class="hint">Tracked on your bet — pay via Venmo/PayPal below (or later).</span>
+            <span class="hint">Step 1 records your guess + amount. Step 2 is sending it.</span>
           </label>
           <label>Note / trash talk <span class="hint">(optional)</span>
             <input name="comment" id="comment" maxlength="200" placeholder="She's 100% good girl" />
@@ -417,17 +477,35 @@
 
         <div class="actions">
           <button type="submit" class="primary" id="submitBtn">Lock in my guess →</button>
-          <span class="note">One serious guess per person. Have fun — Freya's counting on you.</span>
+          <span class="note">One serious guess per person. After you submit, we’ll show how to send your pledge.</span>
         </div>
         <div class="toast" id="toast" role="status"></div>
       </form>
+
+      <div class="confirm-step" id="confirmStep" aria-live="polite">
+        <h3>Now send your <span id="confirmAmount">$0</span> pledge</h3>
+        <p class="summary" id="confirmSummary"></p>
+        <div class="confirm-pay">
+          <a class="pay-btn venmo" id="confirmVenmo" href="#" target="_blank" rel="noopener">Open Venmo</a>
+          <a class="pay-btn paypal" id="confirmPaypal" href="https://www.paypal.com/qrcodes/p2pqrc/84KUAF25UZWSS" target="_blank" rel="noopener">Open PayPal</a>
+        </div>
+        <div class="confirm-qr" id="confirmQr">
+          <!-- filled from existing QR imgs -->
+        </div>
+        <p class="hint" style="text-align:center;margin:0.35rem 0 0;">Prefer QR? Scan below. Memo/note should mention Freya bet.</p>
+        <div class="confirm-actions">
+          <button type="button" class="paid-btn" id="paidBtn">I’ve paid — thanks!</button>
+          <span class="hint" id="paidAck" hidden>Got it — Colton will match your pledge to your guess. 🐾</span>
+        </div>
+      </div>
     </section>
 
-    <section id="pay">
+    <section id="pay" class="soft">
       <h2><span class="num">3</span> Pledge your bet</h2>
-      <p class="hint" style="margin-top:-0.35rem;margin-bottom:1rem;">
-        Send your pledge to Colton. Everything collected goes to <strong style="color:var(--ink)">Charity TBD</strong>.
-        Put <strong style="color:var(--gold)">“Freya bet”</strong> in the memo/note so we can match it to your guess.
+      <p class="hint pay-lead">
+        <strong style="color:var(--ink)">Place your bet first</strong> (step 2 above) — after you lock in a guess we’ll highlight how to send your pledge.
+        Everything collected goes to <strong style="color:var(--ink)">Charity TBD</strong>.
+        Memo/note: <strong style="color:var(--gold)">“Freya bet”</strong>.
       </p>
       <div class="pay-grid">
         <div class="pay-card">
@@ -492,21 +570,57 @@ const CONFIG = {
 const $ = (id) => document.getElementById(id);
 const pctInputs = [$("pct1"), $("pct2"), $("pct3")];
 const localBets = [];
+let lastBet = null;
+
+function pctValues() {
+  return pctInputs.map((el) => {
+    const raw = (el && el.value != null) ? String(el.value).trim() : "";
+    if (raw === "") return 0;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : 0;
+  });
+}
 
 function updatePct() {
-  const sum = pctInputs.reduce((a, el) => a + (parseFloat(el.value) || 0), 0);
-  $("pctSum").textContent = String(Math.round(sum * 10) / 10);
+  const vals = pctValues();
+  const sum = vals.reduce((a, n) => a + n, 0);
+  const rounded = Math.round(sum * 10) / 10;
+  const sumEl = $("pctSum");
   const box = $("pctBox");
-  const ok = sum > 0 && sum <= 100;
-  box.classList.toggle("warn", !ok && sum !== 0);
-  $("pctHint").textContent = sum > 100
-    ? "· too high — trim to ≤ 100%"
-    : sum === 100
-      ? "· locked in at 100%"
-      : "· leave room for “other” if you want";
-  return ok;
+  const hint = $("pctHint");
+  const btn = $("submitBtn");
+  if (!sumEl || !box || !hint) return false;
+
+  sumEl.textContent = String(rounded);
+  box.classList.remove("under", "ok", "over", "warn");
+
+  let okToSubmit = true;
+  if (rounded === 0) {
+    hint.textContent = "· add three percentages (empty counts as 0)";
+  } else if (rounded < 100) {
+    box.classList.add("under");
+    hint.textContent = `· ${Math.round((100 - rounded) * 10) / 10}% left for “other” (or top up to 100%)`;
+  } else if (rounded === 100) {
+    box.classList.add("ok");
+    hint.textContent = "· perfect — locked in at 100%";
+  } else {
+    box.classList.add("over");
+    hint.textContent = "· over 100% — trim before submitting";
+    okToSubmit = false;
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.title = okToSubmit ? "" : "Percentages must total 100% or less";
+  }
+  return okToSubmit;
 }
-pctInputs.forEach((el) => el.addEventListener("input", updatePct));
+
+pctInputs.forEach((el) => {
+  if (!el) return;
+  el.addEventListener("input", updatePct);
+  el.addEventListener("change", updatePct);
+});
 
 function formReady() {
   return Boolean(CONFIG.formId && CONFIG.entries.name && CONFIG.entries.breed1);
@@ -514,15 +628,16 @@ function formReady() {
 if (!formReady()) $("configWarning").classList.add("show");
 
 function collectBet() {
+  const [pct1, pct2, pct3] = pctValues();
   return {
     name: $("name").value.trim(),
     email: $("email").value.trim(),
     breed1: $("breed1").value.trim(),
-    pct1: Number($("pct1").value),
+    pct1,
     breed2: $("breed2").value.trim(),
-    pct2: Number($("pct2").value),
+    pct2,
     breed3: $("breed3").value.trim(),
-    pct3: Number($("pct3").value),
+    pct3,
     pledge: Number($("pledge").value),
     comment: $("comment").value.trim(),
     ts: new Date().toISOString()
@@ -534,9 +649,15 @@ function validate(b) {
   if (!b.breed1 || !b.breed2 || !b.breed3) return "Name all three breeds.";
   const breeds = [b.breed1, b.breed2, b.breed3].map((x) => x.toLowerCase());
   if (new Set(breeds).size < 3) return "Use three different breeds.";
-  if (![b.pct1, b.pct2, b.pct3].every((n) => n >= 1 && n <= 100)) return "Each % should be 1–100.";
-  if (b.pct1 + b.pct2 + b.pct3 > 100) return "Percentages must total 100% or less.";
-  if (!b.pledge || b.pledge < 1) return "Add a pledge amount (tracked only).";
+  if (![b.pct1, b.pct2, b.pct3].every((n) => n >= 1 && n <= 100)) {
+    return "Each % should be 1–100 (empty fields count as 0 — fill all three).";
+  }
+  const total = b.pct1 + b.pct2 + b.pct3;
+  if (total > 100) return "Percentages total over 100%. Trim them so the sum is 100% or less.";
+  if (total < 100) {
+    // allow under 100 with soft warning via toast path — still valid
+  }
+  if (!b.pledge || b.pledge < 1) return "Add a pledge amount (you'll send it in step 2).";
   return null;
 }
 
@@ -556,6 +677,64 @@ async function submitToGoogle(b) {
   await fetch(url, { method: "POST", mode: "no-cors", body });
 }
 
+function venmoUrl(amount, name) {
+  const note = `Freya bet – ${name}`.slice(0, 50);
+  const params = new URLSearchParams({
+    txn: "pay",
+    amount: String(amount),
+    note
+  });
+  return `https://venmo.com/Coltan?${params.toString()}`;
+}
+
+function paypalUrl(amount) {
+  // No PayPal.me handle on file — keep the QR deep link Colton shared.
+  return "https://www.paypal.com/qrcodes/p2pqrc/84KUAF25UZWSS";
+}
+
+function showConfirmStep(b) {
+  lastBet = b;
+  const step = $("confirmStep");
+  const pay = $("pay");
+  $("confirmAmount").textContent = "$" + Number(b.pledge).toLocaleString();
+  $("confirmSummary").innerHTML =
+    `<strong>${escapeHtml(b.name)}</strong> · ` +
+    `${escapeHtml(b.breed1)} ${b.pct1}% · ${escapeHtml(b.breed2)} ${b.pct2}% · ${escapeHtml(b.breed3)} ${b.pct3}%` +
+    ` · pledge <strong>$${Number(b.pledge).toLocaleString()}</strong>` +
+    (b.comment ? `<br/>“${escapeHtml(b.comment)}”` : "");
+
+  const v = $("confirmVenmo");
+  const p = $("confirmPaypal");
+  v.href = venmoUrl(b.pledge, b.name);
+  v.textContent = `Venmo $${Number(b.pledge).toLocaleString()}`;
+  p.href = paypalUrl(b.pledge);
+  p.textContent = `PayPal $${Number(b.pledge).toLocaleString()}`;
+
+  // Clone existing QR images into confirm panel
+  const qrBox = $("confirmQr");
+  qrBox.innerHTML = "";
+  const venmoImg = document.querySelector("#pay img.qr[alt*='Venmo'], #pay .pay-card img.qr");
+  const imgs = document.querySelectorAll("#pay .pay-card img.qr");
+  const labels = ["Venmo QR", "PayPal QR"];
+  imgs.forEach((img, i) => {
+    const fig = document.createElement("figure");
+    const clone = img.cloneNode(true);
+    clone.removeAttribute("width");
+    clone.removeAttribute("height");
+    const cap = document.createElement("figcaption");
+    cap.textContent = labels[i] || "QR";
+    fig.appendChild(clone);
+    fig.appendChild(cap);
+    qrBox.appendChild(fig);
+  });
+
+  $("paidAck").hidden = true;
+  $("paidBtn").disabled = false;
+  step.classList.add("show");
+  if (pay) pay.classList.remove("soft");
+  step.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function renderBets(list) {
   $("statBets").textContent = String(list.length || "—");
   const total = list.reduce((a, b) => a + (Number(b.pledge) || 0), 0);
@@ -568,69 +747,93 @@ function renderBets(list) {
       <div class="bet-chip">
         <div class="who">${escapeHtml(b.name)}</div>
         <div class="guesses">${escapeHtml(b.breed1)} ${b.pct1}% · ${escapeHtml(b.breed2)} ${b.pct2}% · ${escapeHtml(b.breed3)} ${b.pct3}%</div>
-        <div class="pledge">$${Number(b.pledge).toLocaleString()} pledged${b.comment ? " · “" + escapeHtml(b.comment) + "”" : ""}</div>
+        <div class="pledge">$${Number(b.pledge).toLocaleString()}</div>
       </div>`).join("");
   }
+  // popularity bars
   const counts = {};
   list.forEach((b) => {
-    [b.breed1, b.breed2, b.breed3].forEach((br, i) => {
+    [b.breed1, b.breed2, b.breed3].forEach((breed, i) => {
+      if (!breed) return;
+      const key = breed.trim();
       const w = [3, 2, 1][i];
-      const k = br.trim();
-      if (!k) return;
-      counts[k] = (counts[k] || 0) + w;
+      counts[key] = (counts[key] || 0) + w;
     });
   });
   const ranked = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
-  const chart = $("breedChart");
-  if (!ranked.length) {
-    chart.innerHTML = '<p class="empty">Chart fills in as guesses arrive.</p>';
-    return;
+  const max = ranked[0]?.[1] || 1;
+  const bars = $("breedBars");
+  if (bars) {
+    bars.innerHTML = ranked.length ? ranked.map(([name, score]) => `
+      <div class="bar-row">
+        <span>${escapeHtml(name)}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(score / max * 100)}%"></div></div>
+        <span>${score}</span>
+      </div>`).join("") : '<p class="empty">Breed chart fills in as bets arrive.</p>';
   }
-  const max = ranked[0][1];
-  chart.innerHTML = ranked.map(([name, score]) => `
-    <div class="bar-row">
-      <div>${escapeHtml(name)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round((score / max) * 100)}%"></div></div>
-      <div>${score}</div>
-    </div>`).join("");
 }
 
 function escapeHtml(s) {
   return String(s || "").replace(/[&<>"']/g, (c) => ({
-    "&": "&", "<": "<", ">": ">", '"': """, "'": "&#39;"
+    "&": "&",
+    "<": "<",
+    ">": ">",
+    '"': """,
+    "'": "&#39;"
   })[c]);
 }
 
 $("betForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const toast = $("toast");
+  updatePct();
   const b = collectBet();
+  const total = b.pct1 + b.pct2 + b.pct3;
+  if (total > 100) {
+    toast.className = "toast show error";
+    toast.textContent = "Percentages add up to more than 100%. Trim them first.";
+    return;
+  }
   const err = validate(b);
   if (err) {
     toast.className = "toast show error";
     toast.textContent = err;
     return;
   }
+  if (total < 100) {
+    // soft gate: warn but allow — explain remaining %
+    const proceed = true; // always allow under-100; message in toast after success
+  }
+
   $("submitBtn").disabled = true;
   try {
     if (formReady()) {
       await submitToGoogle(b);
-      toast.className = "toast show";
-      toast.textContent = "Guess locked in! Next: pledge via Venmo/PayPal below (memo: Freya bet). 🐾";
-    } else {
-      toast.className = "toast show";
-      toast.textContent = "Saved locally for preview (Google Form not wired yet). You can still pledge below.";
     }
     localBets.push(b);
     renderBets(mergeUnique(window.__remoteBets || [], localBets));
-    $("betForm").reset();
-    updatePct();
+    showConfirmStep(b);
+    toast.className = "toast show";
+    toast.textContent = total < 100
+      ? `Guess locked in at ${total}% (room left for “other”). Next: send your $${b.pledge} pledge below.`
+      : `Guess locked in! Next: send your $${b.pledge} pledge.`;
+    // Keep form values for reference; don't hard-reset so user sees what they submitted
+    $("betForm").querySelectorAll("input, button").forEach((el) => {
+      if (el.id === "submitBtn") return;
+      if (el.tagName === "INPUT") el.readOnly = true;
+    });
+    $("submitBtn").textContent = "Guess locked ✓";
   } catch (ex) {
     toast.className = "toast show error";
-    toast.textContent = "Couldn’t reach the form. Try again, or tell Colton.";
-  } finally {
+    toast.textContent = "Couldn't reach the form. Try again, or tell Colton.";
     $("submitBtn").disabled = false;
   }
+});
+
+$("paidBtn").addEventListener("click", () => {
+  $("paidAck").hidden = false;
+  $("paidBtn").disabled = true;
+  $("paidBtn").textContent = "Marked as paid ✓";
 });
 
 function mergeUnique(a, b) {
@@ -709,6 +912,7 @@ function parseCsv(text) {
 updatePct();
 renderBets([]);
 loadRemote();
+
 </script>
 </body>
 </html>
