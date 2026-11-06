@@ -204,7 +204,8 @@
     background: rgba(129,178,154,0.1); border: 1px solid rgba(129,178,154,0.4);
     max-width: 100%; box-sizing: border-box; overflow-x: hidden;
   }
-  .confirm-step.show { display: block; }
+  .confirm-step.show { display: block; position: relative; z-index: 5; }
+  .confirm-step a.pay-btn { pointer-events: auto; }
   .confirm-step h3 {
     font-family: var(--font-display); font-size: 1.45rem; margin: 0 0 0.5rem;
   }
@@ -219,13 +220,23 @@
   @media (min-width: 560px) {
     .confirm-pay { grid-template-columns: 1fr 1fr; }
   }
+  .confirm-pay-item {
+    display: grid; gap: 0.35rem; justify-items: stretch; width: 100%;
+    position: relative; z-index: 2;
+  }
   .confirm-pay a.pay-btn {
     width: 100%; max-width: 100%; box-sizing: border-box;
     color: #fff !important; text-decoration: none; text-align: center;
     padding: 0.9rem 1.1rem; border-radius: 999px; font-weight: 700;
+    position: relative; z-index: 3; pointer-events: auto; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
   }
   .confirm-pay a.pay-btn.venmo { background: var(--venmo); }
   .confirm-pay a.pay-btn.paypal { background: var(--paypal); }
+  .confirm-pay .pay-btn-sub {
+    display: block; text-align: center; font-size: 0.78rem; font-weight: 400;
+    color: var(--muted); line-height: 1.35; pointer-events: none;
+  }
   .confirm-qr-lead {
     text-align: center; margin: 1rem 0 0.55rem; max-width: 100%;
   }
@@ -499,8 +510,14 @@
         <h3>Now send your <span id="confirmAmount">$0</span> pledge</h3>
         <p class="summary" id="confirmSummary"></p>
         <div class="confirm-pay">
-          <a class="pay-btn venmo" id="confirmVenmo" href="#" target="_blank" rel="noopener">Open Venmo</a>
-          <a class="pay-btn paypal" id="confirmPaypal" href="https://www.paypal.com/qrcodes/p2pqrc/84KUAF25UZWSS" target="_blank" rel="noopener">Open PayPal</a>
+          <div class="confirm-pay-item">
+            <a class="pay-btn venmo" id="confirmVenmo" href="https://venmo.com/code?user_id=1274747224588288997&created=1793917357" target="_blank" rel="noopener">Venmo</a>
+            <span class="pay-btn-sub" id="confirmVenmoSub">Enter the amount and note Freya bet</span>
+          </div>
+          <div class="confirm-pay-item">
+            <a class="pay-btn paypal" id="confirmPaypal" href="https://www.paypal.com/qrcodes/p2pqrc/84KUAF25UZWSS" target="_blank" rel="noopener">PayPal</a>
+            <span class="pay-btn-sub" id="confirmPaypalSub">Enter the amount and note Freya bet</span>
+          </div>
         </div>
         <p class="hint confirm-qr-lead">Or scan a QR — mention Freya bet in the note</p>
         <div class="confirm-qr" id="confirmQr">
@@ -702,19 +719,21 @@ async function submitToGoogle(b) {
   await fetch(url, { method: "POST", mode: "no-cors", body });
 }
 
+function workingPayHrefs() {
+  // Same destinations as the bottom #pay buttons (those already work for Colton).
+  const amp = String.fromCharCode(38);
+  return {
+    venmo: "https://venmo.com/code?user_id=1274747224588288997" + amp + "created=1793917357",
+    paypal: "https://www.paypal.com/qrcodes/p2pqrc/84KUAF25UZWSS"
+  };
+}
+
 function venmoUrl(amount, name) {
-  const note = `Freya bet – ${name}`.slice(0, 50);
-  const params = new URLSearchParams({
-    txn: "pay",
-    amount: String(amount),
-    note
-  });
-  return `https://venmo.com/Coltan?${params.toString()}`;
+  return workingPayHrefs().venmo;
 }
 
 function paypalUrl(amount) {
-  // No PayPal.me handle on file — keep the QR deep link Colton shared.
-  return "https://www.paypal.com/qrcodes/p2pqrc/84KUAF25UZWSS";
+  return workingPayHrefs().paypal;
 }
 
 function showConfirmStep(b) {
@@ -728,12 +747,32 @@ function showConfirmStep(b) {
     ` · pledge <strong>$${Number(b.pledge).toLocaleString()}</strong>` +
     (b.comment ? `<br/>“${escapeHtml(b.comment)}”` : "");
 
+  const hrefs = workingPayHrefs();
+  // Prefer cloning the bottom buttons' live hrefs when present (exact match).
+  const bottomVenmo = document.querySelector("#pay a.pay-btn.venmo");
+  const bottomPaypal = document.querySelector("#pay a.pay-btn.paypal");
   const v = $("confirmVenmo");
   const p = $("confirmPaypal");
-  v.href = venmoUrl(b.pledge, b.name);
-  v.textContent = `Venmo $${Number(b.pledge).toLocaleString()}`;
-  p.href = paypalUrl(b.pledge);
-  p.textContent = `PayPal $${Number(b.pledge).toLocaleString()}`;
+  v.href = (bottomVenmo && bottomVenmo.href) ? bottomVenmo.href : hrefs.venmo;
+  p.href = (bottomPaypal && bottomPaypal.href) ? bottomPaypal.href : hrefs.paypal;
+  v.setAttribute("target", "_blank");
+  p.setAttribute("target", "_blank");
+  v.setAttribute("rel", "noopener");
+  p.setAttribute("rel", "noopener");
+  const amt = "$" + Number(b.pledge).toLocaleString();
+  v.textContent = "Venmo " + amt;
+  p.textContent = "PayPal " + amt;
+  const vSub = $("confirmVenmoSub");
+  const pSub = $("confirmPaypalSub");
+  if (vSub) vSub.textContent = "Enter " + amt + " and note Freya bet";
+  if (pSub) pSub.textContent = "Enter " + amt + " and note Freya bet";
+  // Ensure nothing in the confirm card intercepts taps on these anchors.
+  v.style.pointerEvents = "auto";
+  p.style.pointerEvents = "auto";
+  v.style.position = "relative";
+  p.style.position = "relative";
+  v.style.zIndex = "6";
+  p.style.zIndex = "6";
 
   // Clone existing QR images into confirm panel
   const qrBox = $("confirmQr");
