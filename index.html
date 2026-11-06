@@ -799,13 +799,16 @@ function renderBets(list) {
 }
 
 function escapeHtml(s) {
-  return String(s || "").replace(/[&<>"']/g, (c) => ({
-    "&": "&",
-    "<": "<",
-    ">": ">",
-    '"': """,
-    "'": "&#39;"
-  })[c]);
+  // Build entities at runtime so HTML pipelines cannot decode literals in this script.
+  const amp = String.fromCharCode(38); // &
+  const map = {
+    "&": amp + "amp;",
+    "<": amp + "lt;",
+    ">": amp + "gt;",
+    '"': amp + "quot;",
+    "'": amp + "#39;"
+  };
+  return String(s || "").replace(/[&<>"']/g, (c) => map[c]);
 }
 
 $("betForm").addEventListener("submit", async (e) => {
